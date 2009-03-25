@@ -81,5 +81,9 @@ qx.Class.define("earley.Rule",
     toString : function() {
       return this.getLeftHandSide() + "->" + this.getRightHandSide().join(" ");
     }
-  }
+  },
+  
+  defer : function(statics) {
+    statics.create = qx.lang.Function.bind(statics.create, statics);
+  } 
 });

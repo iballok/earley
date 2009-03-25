@@ -66,6 +66,38 @@ qx.Class.define("earley.test.State",
       this.assertFalse(state.isSymbolAfterDot(b));
       this.assertFalse(state.isSymbolAfterDot(A));
     },
+    
+    testIsNonTerminalAfterDot : function() {
+      var Rule = earley.Rule;
+      var A = this.A;
+      var a = this.a;
+      var b = this.b;
+      
+      var state = new earley.State(Rule.create(A, [a,b,A]), 0, 0);
+      this.assertFalse(state.isNonTerminalAfterDot());
+      
+      var state = new earley.State(Rule.create(A, [a,b,A]), 0, 2);
+      this.assertTrue(state.isNonTerminalAfterDot());
+      
+      var state = new earley.State(Rule.create(A, [a,b,A]), 0, 3);
+      this.assertFalse(state.isNonTerminalAfterDot());
+    },
+    
+    testGetSymbolAfterDot : function() {
+      var Rule = earley.Rule;
+      var A = this.A;
+      var a = this.a;
+      var b = this.b;
+      
+      var state = new earley.State(Rule.create(A, [a,b,A]), 0, 0);
+      this.assertEquals(a, state.getSymbolAfterDot());
+      
+      var state = new earley.State(Rule.create(A, [a,b,A]), 0, 2);
+      this.assertEquals(A, state.getSymbolAfterDot());
+      
+      var state = new earley.State(Rule.create(A, [a,b,A]), 0, 3);
+      this.assertEquals(null, state.getSymbolAfterDot());
+    },
 
 
     testConnectOneToOne : function()
@@ -151,8 +183,8 @@ qx.Class.define("earley.test.State",
       
       var newGeneration = 3;
       var state = new earley.State(earley.Rule.create(A, [a]), 0, 0);
-      var next = state.advanceDot(newGeneration);
-      this.assertEquals(newGeneration, next.getGeneration());
+      var next = state.advanceDot();
+      this.assertEquals(0, next.getGeneration());
       this.assertEquals(1, next.getDotPosition());
       this.assertTrue(next.isComplete());
     }

@@ -25,7 +25,7 @@ qx.Class.define("earley.Set",
 
     addState : function(state)
     {
-      this.__states[state.toHashCode()] = state;
+      this.__states[state.toString()] = state;
     },
 
     getStates : function()
@@ -33,14 +33,23 @@ qx.Class.define("earley.Set",
       return qx.lang.Object.getValues(this.__states);
     },
     
-    complete : function(nonTerminal, generation)
+    lookupState : function (state) {
+      return this.__states[state.toString()] || null;
+    },
+    
+    contains : function(state) 
+    {
+      return !!this.__states[state.toString()];
+    },
+    
+    complete : function(nonTerminal)
     {
       var completed = [];
       for (var key in this.__states)
       {
         var state = this.__states[key];
         if(state.isSymbolAfterDot(nonTerminal)) {
-          completed.push(state.advanceDot(generation));
+          completed.push(state.advanceDot());
         }
       }
       return completed;
@@ -57,6 +66,24 @@ qx.Class.define("earley.Set",
         }
       }
       return scanned;
+    },
+    
+    containsCompletedStateForNonTerminal : function(nonTerminal, generation)
+    {
+      for (var key in this.__states)
+      {
+        var state = this.__states[key];
+        
+        var isCompleted = 
+          state.getGeneration() == generation &&
+          state.getRule().getLeftHandSide() == nonTerminal &&
+          state.isComplete();
+        
+        if (isCompleted) {
+          return true;
+        }
+      }
+      return false;
     }
   }
 });

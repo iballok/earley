@@ -39,5 +39,6 @@ qx.Class.define("earley.Terminal",
   defer : function(statics)
   {
     statics.epsylon = statics.create("<epsylon>");
+    statics.create = qx.lang.Function.bind(statics.create, statics);
   }
 });

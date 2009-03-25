@@ -34,5 +34,9 @@ qx.Class.define("earley.NonTerminal",
     toString : function() {
       return this.getValue();
     }
-  }
+  },
+  
+  defer : function(statics) {
+    statics.create = qx.lang.Function.bind(statics.create, statics);
+  }  
 });

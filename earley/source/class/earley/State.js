@@ -48,15 +48,23 @@ qx.Class.define("earley.State",
       return this.__rule.getRightHandSide().length == this.__dotPosition;
     },
     
-    advanceDot : function (generation) {
+    advanceDot : function () {
       if (this.isComplete()) {
         throw new Error("State is already complete");
       }
-      return new earley.State(this.__rule, generation, this.__dotPosition+1);
+      return new earley.State(this.__rule, this.__generation, this.__dotPosition+1);
     },
     
     isSymbolAfterDot : function(symbol) {
       return this.__rule.getRightHandSide()[this.__dotPosition] == symbol;
+    },
+    
+    getSymbolAfterDot : function() {
+      return this.__rule.getRightHandSide()[this.__dotPosition] || null;
+    },
+
+    isNonTerminalAfterDot : function() {
+      return this.__rule.getRightHandSide()[this.__dotPosition] instanceof earley.NonTerminal;
     },
     
     toString : function() {

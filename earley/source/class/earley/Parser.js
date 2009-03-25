@@ -6,7 +6,7 @@ qx.Class.define("earley.Parser",
   {
     this.base(arguments);
     this.__grammar = grammar;
-    this.__input = input;
+
     this.__sets = [];
   },
 
