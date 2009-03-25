@@ -43,6 +43,46 @@ qx.Class.define("earley.Parser",
     },
 
     
+    parse : function()
+    {
+      if (!this.accept()) {
+        return [];
+      }
+      
+      var sets = this.__sets;
+      var lastSet = sets[sets.length-1];
+      
+      var completedStates = [];
+      var states = lastSet.getStates();
+      var metaStack = [];
+      for (var i=0; i<states.length; i++) {
+        var state = states[i];
+        if (
+          state.getGeneration() == 0 &&
+          state.getRule().getLeftHandSide() == this.__grammar.getStartSymbol() &&
+          state.isComplete()
+        ) {
+          metaStack.push({
+            state : state,
+            rules : [state.getRule()],
+            stack : [state.getRule()]
+          });
+        }
+      }
+      
+      while(metaStack.length) {
+        var metaStackState = metaStack.pop()
+        var rules = metaStackState.rules;
+        var stack = metaStackState.stack;
+        var state = metaStackState.state;
+        while(stack.length) {
+          
+        }
+      }
+      
+    },
+    
+    
     accept : function()
     {
       this.addSet(this._createInitialSet());

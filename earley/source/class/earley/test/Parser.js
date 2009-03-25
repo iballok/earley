@@ -282,12 +282,17 @@ qx.Class.define("earley.test.Parser",
     },    
     
     
-    _testParse : function()
+    testParse : function()
     {
       var grammar = this.grammar;
       var a = this.a;
       var plus = this.plus;
       var parser = new earley.Parser(grammar);
+      
+      var input = [ a, plus ];
+      var derivations = parser.parse(input);
+      this.assertArrayEquals([], derivations);
+
       var input = [ a, plus, a ];
       var derivations = parser.parse(input);
       this.assertEquals(1, derivations.length);
@@ -296,6 +301,18 @@ qx.Class.define("earley.test.Parser",
           {
             return a + ""
           }));
+
+      /*
+      var input = [ a, plus, a, plus, a ];
+      var derivations = parser.parse(input);
+      this.assertEquals(2, derivations.length);
+      
+      this.assertArrayEquals( [ "S->E", "E->E + E", "E->a", "E->a" ],
+          derivation.map( function(a)
+              {
+            return a + ""
+              }));
+              */
     }
   }
 });
