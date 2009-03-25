@@ -6,8 +6,8 @@ qx.Class.define("earley.Parser",
   {
     this.base(arguments);
     this.__grammar = grammar;
-    this.__sets = [];
     this.__input = input;
+    this.__sets = [];
   },
 
   members :
@@ -15,6 +15,14 @@ qx.Class.define("earley.Parser",
     getGrammar : function()
     {
       return this.__grammar;
+    },
+    
+    addSet : function(set) {
+      this.__sets[set.getGeneration()] = set;
+    },
+    
+    getSetForGeneration : function(generation) {
+      return this.__sets[generation]; 
     },
 
     predict : function(nonTerminal, generation)
@@ -33,39 +41,77 @@ qx.Class.define("earley.Parser",
       return predictions;
     },
 
+    
     accept : function()
     {
       this.__sets[0] = this._createInitialSet();
-
-      for ( var i = 0; i < input.length; i++)
+      
+      var input = this.__input;
+      for (var i = 0; i< input.length; i++) 
       {
         var symbol = input[i];
-        var generation = i + 1;
+        var generation = i+1;
         var set = this.__sets[generation] = new earley.Set(symbol, generation);
         this._scan(set);
         this._completeAndPredict(set);
       }
-
-      var lastSet = this.__sets[this.__sets.length - 1]
-      return lastSet.containsAcceptorState();
+      
+      var lastSet = this.__sets[this.__sets.length-1];
+      var startSymbol = this.__grammar.getStartSymbol();
+      var isAccepted = lastSet.containsCompletedStateForNonTerminal(startSymbol, 0);
+      return isAccepted;
     },
-
+    
+    
     _createInitialSet : function()
     {
       var initialSet = new earley.Set(earley.Terminal.epsylon, 0);
-      initialSet.add(new earley.State(grammar.getRuleForStartSymbol()), 0);
+      initialSet.addState(new earley.State(this.__grammar.getRuleForStartSymbol(), 0, 0));
       this._completeAndPredict(initialSet);
       return initialSet;
     },
-
+    
     _completeAndPredict : function(set)
     {
-      /* TODO */
+      var generation = set.getGeneration();
+      
+      var workQueue = set.getStates();
+      while(workQueue.length) {
+        var state = workQueue.pop();
+        /*complete*/
+        var completed = [];
+        if (state.isComplete()) {
+          var g = state.getGeneration();
+          var nt = state.getRule().getLeftHandSide();
+          var previousSet = this.getSetForGeneration(g);
+          completed = previousSet.complete(nt,generation);
+        }
+        /*predict*/
+        var predicted = [];
+        if(state.isNonTerminalAfterDot()) {
+          var nt = state.getSymbolAfterDot();
+          predicted = this.predict(nt, generation);
+        }
+        /*processed*/
+        set.addState(state);
+        /*merge*/
+        var newStates = qx.lang.Array.append(predicted, completed);
+        for(var i=0; i<newStates.length;i++) {
+          var newState = newStates[i];
+          if(set.contains(newState)) {
+            newState = set.lookupState(newState);
+          } else {
+            workQueue.push(newState);
+          }
+          /*TODO set connections*/
+        }
+      }
+      
     },
-
+    
     _scan : function(set)
     {
-      /* TODO */
+      // TODO
     }
   }
 });
