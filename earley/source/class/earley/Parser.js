@@ -33,24 +33,23 @@ qx.Class.define("earley.Parser",
       return predictions;
     },
 
-    
     accept : function()
     {
       this.__sets[0] = this._createInitialSet();
-      
-      for (var i = 0; i< input.length; i++) 
+
+      for ( var i = 0; i < input.length; i++)
       {
         var symbol = input[i];
-        var generation = i+1;
+        var generation = i + 1;
         var set = this.__sets[generation] = new earley.Set(symbol, generation);
         this._scan(set);
         this._completeAndPredict(set);
       }
-      
-      var lastSet = this.__sets[this.__sets.length-1]
+
+      var lastSet = this.__sets[this.__sets.length - 1]
       return lastSet.containsAcceptorState();
     },
-    
+
     _createInitialSet : function()
     {
       var initialSet = new earley.Set(earley.Terminal.epsylon, 0);
@@ -58,14 +57,15 @@ qx.Class.define("earley.Parser",
       this._completeAndPredict(initialSet);
       return initialSet;
     },
-    
+
     _completeAndPredict : function(set)
     {
-      // TODO
+      /* TODO */
     },
-    
+
     _scan : function(set)
     {
-      // TODO
+      /* TODO */
     }
+  }
 });
