@@ -6,6 +6,7 @@ qx.Class.define("earley.Parser",
   {
     this.base(arguments);
     this.__grammar = grammar;
+    this.__input = input;
 
     this.__sets = [];
   },
@@ -44,15 +45,16 @@ qx.Class.define("earley.Parser",
     
     accept : function()
     {
-      this.__sets[0] = this._createInitialSet();
+      this.addSet(this._createInitialSet());
       
       var input = this.__input;
       for (var i = 0; i< input.length; i++) 
       {
         var symbol = input[i];
         var generation = i+1;
-        var set = this.__sets[generation] = new earley.Set(symbol, generation);
-        this._scan(set);
+        var set = new earley.Set(symbol, generation);
+        this.addSet(set);
+        this._scan(set, symbol);
         this._completeAndPredict(set);
       }
       
@@ -109,9 +111,18 @@ qx.Class.define("earley.Parser",
       
     },
     
-    _scan : function(set)
+    _scan : function(set, symbol)
     {
-      // TODO
+      var previousSet = this.getSetForGeneration(set.getGeneration() - 1);
+      var states = previousSet.getStates();
+      
+      for (var i=0; i<states.length; i++) {
+        var state = states[i];
+        if (state.getSymbolAfterDot() == symbol) {
+          set.addState(state.advanceDot());
+          /* TODO: connect */
+        }
+      }
     }
   }
 });

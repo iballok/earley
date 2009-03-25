@@ -93,6 +93,38 @@ qx.Class.define("earley.test.Parser",
       this.assertFalse(parser.accept());
     },
     
+    testAcceptAdvanced : function() 
+    {
+      var NT = earley.NonTerminal.create;
+      var Terminal = earley.Terminal.create;
+      var R = earley.Rule.create;
+      
+      var S = NT("S");
+
+      var E = NT("E");
+      var T = NT("T");
+      var F = NT("F");
+      var plus = Terminal("+");
+      var mult = Terminal("*");
+      var lparen = Terminal("(");
+      var rparen = Terminal(")");
+      var a = Terminal("a");
+      
+      var grammar = this.getArithmeticGrammar();
+      
+      var parser = new earley.Parser(grammar, []);
+      this.assertFalse(parser.accept());
+      
+      var parser = new earley.Parser(grammar, [a, plus, a, mult, a]);
+      this.assertTrue(parser.accept());
+      
+      var parser = new earley.Parser(grammar, [a, plus, lparen, a, plus, a, mult, a, rparen]);
+      this.assertTrue(parser.accept());
+      
+      var parser = new earley.Parser(grammar, [a, plus, lparen, a, plus, a, mult]);
+      this.assertFalse(parser.accept());
+    },
+    
 
     testCreateInitialSet : function()
     {
