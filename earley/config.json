@@ -30,7 +30,7 @@
   "let" :
   {
     "APPLICATION"  : "earley",
-    "QOOXDOO_PATH" : "../../../../../qooxdoo-0.8.2-sdk",
+    "QOOXDOO_PATH" : "../../../qooxdoo-0.8.2-sdk",
     "QXTHEME"      : "earley.theme.Theme",
     "API_EXCLUDE"  : ["qx.legacy.*","qx.test.*"],
     "LOCALES"      : [ "en" ],
