@@ -27,10 +27,10 @@ qx.Class.define("earley.test.Parser",
       var R = earley.Rule.create;
       
       var S = NT("S");
-
       var E = NT("E");
       var T = NT("T");
       var F = NT("F");
+
       var plus = Terminal("+");
       var mult = Terminal("*");
       var lparen = Terminal("(");

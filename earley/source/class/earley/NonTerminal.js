@@ -15,12 +15,16 @@ qx.Class.define("earley.NonTerminal",
     }
   },
   
-  properties : {
-    value : {
+  
+  properties :
+  {
+    value :
+    {
       check : "String",
       apply : "_applyValue"
     }
   },
+  
   
   members : 
   {
@@ -31,10 +35,12 @@ qx.Class.define("earley.NonTerminal",
       }
     },
     
+    
     toString : function() {
       return this.getValue();
     }
   },
+  
   
   defer : function(statics) {
     statics.create = qx.lang.Function.bind(statics.create, statics);

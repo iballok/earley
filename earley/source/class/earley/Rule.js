@@ -5,6 +5,7 @@ qx.Class.define("earley.Rule",
   construct : function(leftHandSide, rightHandSide)
   {
     this.base(arguments);
+    
     this.__nonTerminals = {};
     this.__terminals = {};
     
@@ -82,6 +83,7 @@ qx.Class.define("earley.Rule",
       return this.getLeftHandSide() + "->" + this.getRightHandSide().join(" ");
     }
   },
+  
   
   defer : function(statics) {
     statics.create = qx.lang.Function.bind(statics.create, statics);

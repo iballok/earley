@@ -1,31 +1,36 @@
 qx.Class.define("earley.State",
 {
   extend : qx.core.Object,
+  
   construct : function(rule, generation, dotPosition)
   {
     this.base(arguments);
+    
     this.__rule = rule;
     this.__generation = generation;
     this.__dotPosition = dotPosition;
+    
     this.__incomingStates = {};
     this.__outgoingStates = {};
   },
 
   members :
   {
-    getRule : function()
-    {
+    getRule : function() {
       return this.__rule;
     },
-    getGeneration : function()
-    {
+    
+    
+    getGeneration : function() {
       return this.__generation;
     },
-    getDotPosition : function()
-    {
+    
+    
+    getDotPosition : function() {
       return this.__dotPosition;
     },
 
+    
     addOutgoingState : function(state)
     {
       this.__outgoingStates[state.toHashCode()] = state;
@@ -33,46 +38,51 @@ qx.Class.define("earley.State",
     },
     
     
-    getOutgoingStates : function()
-    {
+    getOutgoingStates : function() {
       return qx.lang.Object.getValues(this.__outgoingStates);
     },
     
     
-    getIncomingStates : function()
-    {
+    getIncomingStates : function() {
       return qx.lang.Object.getValues(this.__incomingStates);
     },
     
-    isComplete : function () {
+    
+    isComplete : function() {
       return this.__rule.getRightHandSide().length == this.__dotPosition;
     },
     
-    advanceDot : function () {
+    
+    advanceDot : function ()
+    {
       if (this.isComplete()) {
         throw new Error("State is already complete");
       }
       return new earley.State(this.__rule, this.__generation, this.__dotPosition+1);
     },
     
+    
     isSymbolAfterDot : function(symbol) {
       return this.__rule.getRightHandSide()[this.__dotPosition] == symbol;
     },
+    
     
     getSymbolAfterDot : function() {
       return this.__rule.getRightHandSide()[this.__dotPosition] || null;
     },
 
+    
     isNonTerminalAfterDot : function() {
-      return this.__rule.getRightHandSide()[this.__dotPosition] instanceof earley.NonTerminal;
+      return this.getSymbolAfterDot() instanceof earley.NonTerminal;
     },
     
-    toString : function() {
+    
+    toString : function()
+    {
       var rule = this.__rule;
       var rhs = qx.lang.Array.clone(rule.getRightHandSide());
       qx.lang.Array.insertAt(rhs, "[.]", this.__dotPosition);
       return rule.getLeftHandSide() + "->" + rhs.join(" ") + ", " + this.__generation;
     }
   }
-
 });

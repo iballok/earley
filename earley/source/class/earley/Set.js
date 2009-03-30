@@ -11,34 +11,35 @@ qx.Class.define("earley.Set",
     this.__states = {};
   },
 
+  
   members :
   {
-    getTerminal : function()
-    {
+    getTerminal : function() {
       return this.__terminal;
     },
 
-    getGeneration : function()
-    {
+    
+    getGeneration : function() {
       return this.__generation;
     },
 
-    addState : function(state)
-    {
+    
+    addState : function(state) {
       this.__states[state.toString()] = state;
     },
 
-    getStates : function()
-    {
+    
+    getStates : function() {
       return qx.lang.Object.getValues(this.__states);
     },
+    
     
     lookupState : function (state) {
       return this.__states[state.toString()] || null;
     },
     
-    contains : function(state) 
-    {
+    
+    contains : function(state) {
       return !!this.__states[state.toString()];
     },
     
@@ -55,6 +56,7 @@ qx.Class.define("earley.Set",
       return completed;
     },
     
+    
     scan : function(terminal)
     {
       var scanned = [];
@@ -67,6 +69,7 @@ qx.Class.define("earley.Set",
       }
       return scanned;
     },
+    
     
     containsCompletedStateForNonTerminal : function(nonTerminal, generation)
     {

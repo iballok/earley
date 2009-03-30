@@ -5,23 +5,21 @@ qx.Class.define("earley.Grammar",
   construct : function(startSymbol)
   {
     this.base(arguments);
+    
     this.__startSymbol = startSymbol;
-    this.__rules =
-    {};
-
-    this.__nonTerminals =
-    {};
-    this.__terminals =
-    {};
+    this.__rules = {};
+    this.__nonTerminals = {};
+    this.__terminals = {};
   },
 
+  
   members :
   {
-    getStartSymbol : function()
-    {
+    getStartSymbol : function() {
       return this.__startSymbol;
     },
 
+    
     addRule : function(rule)
     {
       this.__rules[rule.toString()] = rule;
@@ -41,11 +39,12 @@ qx.Class.define("earley.Grammar",
       }
     },
 
-    getRules : function()
-    {
+    
+    getRules : function() {
       return qx.lang.Object.getValues(this.__rules);
     },
 
+    
     getRulesForNonTerminal : function(nonTerminal)
     {
       var rules = [];
@@ -60,6 +59,7 @@ qx.Class.define("earley.Grammar",
       return rules;
     },
 
+    
     getRuleForStartSymbol : function()
     {
       var rules = this.getRulesForNonTerminal(this.getStartSymbol());
@@ -68,13 +68,13 @@ qx.Class.define("earley.Grammar",
       return rules[0];
     },
 
-    getNonTerminals : function()
-    {
+    
+    getNonTerminals : function() {
       return qx.lang.Object.getValues(this.__nonTerminals);
     },
 
-    getTerminals : function()
-    {
+    
+    getTerminals : function() {
       return qx.lang.Object.getValues(this.__terminals);
     }
   }

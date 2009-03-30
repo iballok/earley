@@ -1,6 +1,6 @@
 qx.Class.define("earley.Parser",
 {
-  extend :qx.core.Object,
+  extend : qx.core.Object,
 
   construct : function(grammar, input)
   {
@@ -11,21 +11,24 @@ qx.Class.define("earley.Parser",
     this.__sets = [];
   },
 
+  
   members :
   {
-    getGrammar : function()
-    {
+    getGrammar : function() {
       return this.__grammar;
     },
+    
     
     addSet : function(set) {
       this.__sets[set.getGeneration()] = set;
     },
     
+    
     getSetForGeneration : function(generation) {
       return this.__sets[generation]; 
     },
 
+    
     predict : function(nonTerminal, generation)
     {
       var predictions = [];
@@ -92,8 +95,10 @@ qx.Class.define("earley.Parser",
       {
         var symbol = input[i];
         var generation = i+1;
+        
         var set = new earley.Set(symbol, generation);
         this.addSet(set);
+        
         this._scan(set, symbol);
         this._completeAndPredict(set);
       }
@@ -105,6 +110,21 @@ qx.Class.define("earley.Parser",
     },
     
     
+    _scan : function(set, symbol)
+    {
+      var previousSet = this.getSetForGeneration(set.getGeneration() - 1);
+      var states = previousSet.getStates();
+      
+      for (var i=0; i<states.length; i++) {
+        var state = states[i];
+        if (state.getSymbolAfterDot() == symbol) {
+          set.addState(state.advanceDot());
+          /* TODO: connect */
+        }
+      }
+    },
+
+    
     _createInitialSet : function()
     {
       var initialSet = new earley.Set(earley.Terminal.epsylon, 0);
@@ -112,6 +132,7 @@ qx.Class.define("earley.Parser",
       this._completeAndPredict(initialSet);
       return initialSet;
     },
+    
     
     _completeAndPredict : function(set)
     {
@@ -146,21 +167,6 @@ qx.Class.define("earley.Parser",
             workQueue.push(newState);
           }
           /*TODO set connections*/
-        }
-      }
-      
-    },
-    
-    _scan : function(set, symbol)
-    {
-      var previousSet = this.getSetForGeneration(set.getGeneration() - 1);
-      var states = previousSet.getStates();
-      
-      for (var i=0; i<states.length; i++) {
-        var state = states[i];
-        if (state.getSymbolAfterDot() == symbol) {
-          set.addState(state.advanceDot());
-          /* TODO: connect */
         }
       }
     }

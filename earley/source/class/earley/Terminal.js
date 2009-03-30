@@ -15,12 +15,16 @@ qx.Class.define("earley.Terminal",
     }
   },
   
-  properties : {
-    value : {
+  
+  properties : 
+  {
+    value :
+    {
       check : "String",
       apply : "_applyValue"
     }
   },
+  
   
   members : 
   {
@@ -31,10 +35,12 @@ qx.Class.define("earley.Terminal",
       }
     },
     
+    
     toString : function() {
       return this.getValue();
     }
   },
+  
   
   defer : function(statics)
   {
