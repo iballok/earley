@@ -15,16 +15,19 @@ qx.Class.define("earley.test.StateStack",
       
       var state = new earley.State(Rule(S, [E]), 0, 1);
       var stack = new earley.StateStack(state);
+      this.assertEquals(state, stack.getLastProcessedState());
       
       this.assertException(function() {
         stack.getDerivation();
       });
       
-      stack.processState(new earley.State(Rule(S, [E]), 0, 0));
+      var state = new earley.State(Rule(S, [E]), 0, 0);
+      stack.processState(state);
       this.assertEquals(
         [Rule(S, [E])].join(),
         stack._getDerivation().join()
       );
+      this.assertEquals(state, stack.getLastProcessedState());
       
       // stack is empty
       this.assertException(function() {
@@ -61,6 +64,8 @@ qx.Class.define("earley.test.StateStack",
 
       this.assertNotIdentical(stack._getDerivation(), clone._getDerivation());
       this.assertArrayEquals(stack._getDerivation(), clone._getDerivation());
+
+      this.assertEquals(stack.getLastProcessedState(), clone.getLastProcessedState());
     },
     
     
@@ -280,6 +285,7 @@ qx.Class.define("earley.test.StateStack",
            ].join(),
            stack._getDerivation().join()
       );
+      this.assertFalse(stack.isDerivationComplete());
       
       var state = new earley.State(Rule(S, [E]), 0, 0);
       this.assertTrue(stack.isNextPossibleState(state));
@@ -295,6 +301,8 @@ qx.Class.define("earley.test.StateStack",
            ].join(),
            stack._getDerivation().join()
       );
+      
+      this.assertTrue(stack.isDerivationComplete());
       
       this.assertEquals(
       [

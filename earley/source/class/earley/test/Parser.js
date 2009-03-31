@@ -438,37 +438,42 @@ qx.Class.define("earley.test.Parser",
     },    
     
     
-    _testParse : function()
+    testParseFail : function()
     {
       var grammar = this.grammar;
       var a = this.a;
       var plus = this.plus;
-      var parser = new earley.Parser(grammar);
-      
       var input = [ a, plus ];
-      var derivations = parser.parse(input);
+      var parser = new earley.Parser(grammar, input);
+      
+      var derivations = parser.parse();
       this.assertArrayEquals([], derivations);
-
+    },
+      
+    testParse : function() {
+      var grammar = this.grammar;
+      var a = this.a;
+      var plus = this.plus;
       var input = [ a, plus, a ];
+      var parser = new earley.Parser(grammar, input);
       var derivations = parser.parse(input);
       this.assertEquals(1, derivations.length);
       this.assertArrayEquals( [ "S->E", "E->E + E", "E->a", "E->a" ],
-          derivation.map( function(a)
+          derivations[0].map( function(a)
           {
             return a + ""
           }));
 
-      /*
+      
       var input = [ a, plus, a, plus, a ];
+      var parser = new earley.Parser(grammar, input);
       var derivations = parser.parse(input);
       this.assertEquals(2, derivations.length);
       
-      this.assertArrayEquals( [ "S->E", "E->E + E", "E->a", "E->a" ],
-          derivation.map( function(a)
-              {
-            return a + ""
-              }));
-              */
+      this.assertEquals( [ "S->E", "E->E + E", "E->a", "E->E + E", "E->a", "E->a" ].join(", "),
+          derivations[0].join(", "));
+      this.assertEquals( [ "S->E", "E->E + E", "E->E + E", "E->a", "E->a", "E->a" ].join(", "),
+          derivations[1].join(", "));
     }
   }
 });
