@@ -54,11 +54,6 @@ qx.Class.define("earley.Parser",
       // StateStack
       // -> Process state
       // -> Derivation
-      
-      
-      
-      
-      
       if (!this.accept()) {
         return [];
       }
@@ -67,33 +62,44 @@ qx.Class.define("earley.Parser",
       var lastSet = sets[sets.length-1];
       
       var completedStates = [];
-      var states = lastSet.getStates();
+      var lastStates = lastSet.getStates();
       var metaStack = [];
-      for (var i=0; i<states.length; i++) {
-        var state = states[i];
+      for (var i=0; i<lastStates.length; i++) {
+        var lastState = lastStates[i];
         if (
-          state.getGeneration() == 0 &&
-          state.getRule().getLeftHandSide() == this.__grammar.getStartSymbol() &&
-          state.isComplete()
+            lastState.getGeneration() == 0 &&
+            lastState.getRule().getLeftHandSide() == this.__grammar.getStartSymbol() &&
+            lastState.isComplete()
         ) {
-          metaStack.push({
-            state : state,
-            rules : [state.getRule()],
-            stack : [state]
-          });
+          metaStack.push(new earley.StateStack(lastState));
         }
       }
+      
+      var derivations = [];
       
       while(metaStack.length) {
-        var metaStackState = metaStack.pop()
-        var rules = metaStackState.rules;
-        var stack = metaStackState.stack;
-        var state = metaStackState.state;
-        while(stack.length) {
-          
+        var stateStack = metaStack.pop();
+        while (!stateStack.isDerivationComplete()) {
+          var state = stateStack.getLastProcessedState();
+          var incomingStates = state.getIncomingStates();
+          var nextPossibleStates = [];
+          for (var i=0; i < incomingStates.length; i++) {
+            var incomingState = incomingStates[i];
+            if (stateStack.isNextPossibleState(incomingState)) {
+              nextPossibleStates.push(incomingState);
+            }
+          }
+          while (nextPossibleStates.length > 1) {
+            var nextPossibleState = nextPossibleStates.pop();
+            var newStateStack = stateStack.clone();
+            newStateStack.processState(nextPossibleState);
+            metaStack.push(newStateStack);
+          }
+          stateStack.processState(nextPossibleStates.pop());
         }
+        derivations.push(stateStack.getDerivation());
       }
-      
+      return derivations;
     },
     
     

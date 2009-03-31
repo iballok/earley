@@ -10,6 +10,7 @@ qx.Class.define("earley.StateStack",
     {
       this.__stack = [acceptingState];
       this.__derivation = [acceptingState.getRule()];
+      this.__lastProcessedState = acceptingState;
     } 
     else
     {
@@ -36,18 +37,22 @@ qx.Class.define("earley.StateStack",
       );
     },
     
+    getLastProcessedState : function () {
+      return this.__lastProcessedState;
+    },
+    
     
     processState : function(state)
     {
       if (!this.isNextPossibleState(state)) {
         throw new qx.core.AssertionError("State is no possible next state!");
       }
+      this.__lastProcessedState = state;
       
       if (state.isComplete()) 
       {
         this.__stack.push(state);
         this.__derivation.push(state.getRule());
-        return;
       }
       else
       {
@@ -79,13 +84,18 @@ qx.Class.define("earley.StateStack",
       
       clone.__derivation = qx.lang.Array.clone(this.__derivation);
       clone.__stack = qx.lang.Array.clone(this.__stack);
+      clone.__lastProcessedState = this.__lastProcessedState;
       return clone;
     },
     
+    isDerivationComplete : function() {
+      return this.__stack.length == 0;
+    },
+
     
     getDerivation : function() 
     {
-      if (this.__stack.length != 0) {
+      if (!this.isDerivationComplete()) {
         throw new qx.core.AssertionError("State stack is in intermediate state.");
       }
       return this._getDerivation();
