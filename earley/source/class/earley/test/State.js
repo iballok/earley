@@ -27,6 +27,7 @@ qx.Class.define("earley.test.State",
       this.assertEquals(rule, state.getRule());
     },
       
+    
     testToString : function()
     {
       var Rule = earley.Rule;
@@ -67,6 +68,7 @@ qx.Class.define("earley.test.State",
       this.assertFalse(state.isSymbolAfterDot(A));
     },
     
+    
     testIsNonTerminalAfterDot : function() {
       var Rule = earley.Rule;
       var A = this.A;
@@ -82,6 +84,7 @@ qx.Class.define("earley.test.State",
       var state = new earley.State(Rule.create(A, [a,b,A]), 0, 3);
       this.assertFalse(state.isNonTerminalAfterDot());
     },
+    
     
     testGetSymbolAfterDot : function() {
       var Rule = earley.Rule;
@@ -112,6 +115,7 @@ qx.Class.define("earley.test.State",
       this.assertArrayEquals( [ source ], destination.getIncomingStates());
     },
 
+    
     testConnectOneToMany : function()
     {
       var rule1 = this.rule1;
@@ -127,6 +131,7 @@ qx.Class.define("earley.test.State",
       this.assertArrayEquals( [ source ], destination2.getIncomingStates());
     },
 
+    
     testConnectManyToOne : function()
     {
       var rule1 = this.rule1;
@@ -144,6 +149,7 @@ qx.Class.define("earley.test.State",
           .getIncomingStates().sort());
     },
 
+    
     testConnectManyToMany : function()
     {
       var rule1 = this.rule1;
@@ -167,6 +173,34 @@ qx.Class.define("earley.test.State",
           .getIncomingStates().sort());
     },
 
+    
+    testIsDotAdvanced : function()
+    {
+      var A = earley.NonTerminal.create("A");
+      var B = earley.NonTerminal.create("B");
+      var a = earley.Terminal.create("a");
+      var b = earley.Terminal.create("b");
+
+      var state = new earley.State(earley.Rule.create(A, [A, B]), 0, 0);
+      var advanced = state.advanceDot();
+      this.assertTrue(state.isDotAdvanced(advanced));
+
+      this.assertFalse(state.isDotAdvanced(state));
+
+      var state1 = new earley.State(earley.Rule.create(A, [A, B]), 0, 0);
+      var state2 = new earley.State(earley.Rule.create(A, [A, B]), 0, 2);
+      this.assertFalse(state1.isDotAdvanced(state2));
+      
+      var state1 = new earley.State(earley.Rule.create(A, [A, B]), 0, 0);
+      var state2 = new earley.State(earley.Rule.create(A, [A, B]), 1, 1);
+      this.assertFalse(state1.isDotAdvanced(state2));
+      
+      var state1 = new earley.State(earley.Rule.create(A, [A, B]), 0, 0);
+      var state2 = new earley.State(earley.Rule.create(A, [A, b]), 0, 1);
+      this.assertFalse(state1.isDotAdvanced(state2));
+    },
+    
+    
     testDotPosition : function()
     {
       var A = earley.NonTerminal.create("A");

@@ -93,6 +93,7 @@ qx.Class.define("earley.test.Parser",
       this.assertFalse(parser.accept());
     },
     
+    
     testAcceptAdvanced : function() 
     {
       var NT = earley.NonTerminal.create;

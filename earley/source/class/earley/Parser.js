@@ -48,6 +48,17 @@ qx.Class.define("earley.Parser",
     
     parse : function()
     {
+      // walk states starting with accepting state
+      // depth first tree search
+      // maintain stack of visited states
+      // StateStack
+      // -> Process state
+      // -> Derivation
+      
+      
+      
+      
+      
       if (!this.accept()) {
         return [];
       }
@@ -68,7 +79,7 @@ qx.Class.define("earley.Parser",
           metaStack.push({
             state : state,
             rules : [state.getRule()],
-            stack : [state.getRule()]
+            stack : [state]
           });
         }
       }

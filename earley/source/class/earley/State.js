@@ -61,6 +61,16 @@ qx.Class.define("earley.State",
       return new earley.State(this.__rule, this.__generation, this.__dotPosition+1);
     },
     
+     
+    isDotAdvanced : function(state)
+    {
+      return (
+        this.__rule == state.__rule &&
+        this.__generation == state.__generation &&
+        this.__dotPosition + 1 == state.__dotPosition
+      );
+    },
+    
     
     isSymbolAfterDot : function(symbol) {
       return this.__rule.getRightHandSide()[this.__dotPosition] == symbol;
