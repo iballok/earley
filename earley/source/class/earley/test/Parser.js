@@ -450,6 +450,34 @@ qx.Class.define("earley.test.Parser",
       this.assertArrayEquals([], derivations);
     },
       
+    
+    testParseArithmetic : function()
+    {
+      var NT = earley.NonTerminal.create;
+      var Terminal = earley.Terminal.create;
+      var R = earley.Rule.create;
+      
+      var S = NT("S");
+
+      var E = NT("E");
+      var T = NT("T");
+      var F = NT("F");
+      var plus = Terminal("+");
+      var mult = Terminal("*");
+      var lp = Terminal("(");
+      var rp = Terminal(")");
+      var a = Terminal("a");
+      
+      var grammar = this.getArithmeticGrammar();
+      // a + ( a * ( a + a ) + a )
+      var parser = new earley.Parser(grammar, [a, plus, lp, a, mult, lp, a, plus, a, rp, plus, a, rp, mult, a]);
+      this.assertTrue(parser.accept());
+      this.assertEquals("S->E, E->T + E, E->T, T->F * T, T->F, F->a, F->( E ), E->T + E, E->T, T->F, F->a, T->F * T, T->F, F->( E ), E->T + E, E->T, T->F, F->a, T->F, F->a, F->a, T->F, F->a", parser.parse()[0].join(", "));
+      this.debug("Sentence: a + ( a * ( a + a ) + a )");
+      this.debug("Derivation: " + parser.parse()[0].join(", "));
+    },
+    
+    
     testParse : function() {
       var grammar = this.grammar;
       var a = this.a;
