@@ -128,9 +128,11 @@ qx.Class.define("earley.Parser",
       
       for (var i=0; i<states.length; i++) {
         var state = states[i];
-        if (state.getSymbolAfterDot() == symbol) {
-          set.addState(state.advanceDot());
-          /* TODO: connect */
+        if (state.getSymbolAfterDot() == symbol) 
+        {
+          var newState = state.advanceDot();
+          set.addState(newState);
+          state.addOutgoingState(newState);
         }
       }
     },
@@ -150,15 +152,17 @@ qx.Class.define("earley.Parser",
       var generation = set.getGeneration();
       
       var workQueue = set.getStates();
-      while(workQueue.length) {
+      while(workQueue.length) 
+      {
         var state = workQueue.pop();
         /*complete*/
         var completed = [];
-        if (state.isComplete()) {
+        if (state.isComplete()) 
+        {
           var g = state.getGeneration();
           var nt = state.getRule().getLeftHandSide();
-          var previousSet = this.getSetForGeneration(g);
-          completed = previousSet.complete(nt,generation);
+          var birthSet = this.getSetForGeneration(g);
+          completed = birthSet.complete(nt,generation);
         }
         /*predict*/
         var predicted = [];
@@ -170,14 +174,15 @@ qx.Class.define("earley.Parser",
         set.addState(state);
         /*merge*/
         var newStates = qx.lang.Array.append(predicted, completed);
-        for(var i=0; i<newStates.length;i++) {
+        for(var i=0; i<newStates.length;i++)
+        {
           var newState = newStates[i];
           if(set.contains(newState)) {
             newState = set.lookupState(newState);
           } else {
             workQueue.push(newState);
           }
-          /*TODO set connections*/
+          state.addOutgoingState(newState);
         }
       }
     }

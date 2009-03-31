@@ -87,6 +87,11 @@ qx.Class.define("earley.State",
     },
     
     
+    toStringWithIncomingStates : function() {
+      return this.toString() + " {" + this.getIncomingStates().sort().join("; ") + "}";
+    },
+    
+    
     toString : function()
     {
       var rule = this.__rule;

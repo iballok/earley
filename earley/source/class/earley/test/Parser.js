@@ -50,6 +50,27 @@ qx.Class.define("earley.test.Parser",
     },
     
     
+    getAmgiguousArithmeticGrammar : function() 
+    {
+      var NT = earley.NonTerminal.create;
+      var Terminal = earley.Terminal.create;
+      var R = earley.Rule.create;
+      
+      var S = NT("S");
+      var E = NT("E");
+
+      var plus = Terminal("+");
+      var a = Terminal("a");
+
+      var grammar = new earley.Grammar(S);
+      grammar.addRule(R(S, [ E ]));
+      grammar.addRule(R(E, [ E, plus, E ]));
+      grammar.addRule(R(E, [ a ]));
+      
+      return grammar;
+    },    
+    
+    
     testCreate : function()
     {
       var parser = new earley.Parser(this.grammar);
@@ -177,9 +198,143 @@ qx.Class.define("earley.test.Parser",
       this.assertEquals(set, parser.getSetForGeneration(1));
     },
     
+
+    _sortAndJoin : function(varargs) 
+    {
+      var args = qx.lang.Array.fromArguments(arguments);
+      return "{" + args.sort().join("; ") + "}";
+    },
+    
+    
+    testAmbigousGrammar : function()
+    {
+      var _ = this._sortAndJoin;
+      
+      var S = this.S;
+      var E = this.E;
+      var plus = this.plus;
+      var a = this.a;
+
+      var grammar = this.getAmgiguousArithmeticGrammar();
+      var parser = new earley.Parser(grammar, [a, plus, a, plus, a]);
+      
+      var set = new earley.Set(earley.Terminal.epsylon, 0);
+      set.addState(new earley.State(earley.Rule.create(S, [ E ]), 0, 0));
+      parser.addSet(set);
+      parser._completeAndPredict(set);
+
+      this.assertEquals(
+        [
+          "S->[.] E, 0 {}",
+          "E->[.] E + E, 0 " + _("S->[.] E, 0", "E->[.] E + E, 0"),
+          "E->[.] a, 0 " + _("S->[.] E, 0", "E->[.] E + E, 0")
+        ].sort().join("; "),
+        set.getStates().map( function(a)
+        {
+          return a.toStringWithIncomingStates()
+        }).sort().join("; ")
+      );
+
+      var set = new earley.Set(a, 1);
+      parser.addSet(set);
+      parser._scan(set, a);
+      parser._completeAndPredict(set);
+
+      this.assertEquals(
+        [
+          "E->a [.], 0 " + _("E->[.] a, 0"),
+          "S->E [.], 0 " + _("E->a [.], 0"),
+          "E->E [.] + E, 0 " + _("E->a [.], 0")
+        ].sort().join("; "),
+        set.getStates().map( function(a)
+        {
+          return a.toStringWithIncomingStates()
+        }).sort().join("; ")
+      );
+      
+      var set = new earley.Set(plus, 2);
+      parser.addSet(set);
+      parser._scan(set, plus);
+      parser._completeAndPredict(set);
+
+      this.assertEquals(
+        [
+          "E->E + [.] E, 0 " + _("E->E [.] + E, 0"),
+          "E->[.] E + E, 2 " + _("E->E + [.] E, 0", "E->[.] E + E, 2"),
+          "E->[.] a, 2 " + _("E->E + [.] E, 0", "E->[.] E + E, 2")
+        ].sort().join("; "),
+        set.getStates().map( function(a)
+        {
+          return a.toStringWithIncomingStates()
+        }).sort().join("; ")
+      );
+      
+      var set = new earley.Set(a, 3);
+      parser.addSet(set);
+      parser._scan(set, a);
+      parser._completeAndPredict(set);
+
+      this.assertEquals(
+        [
+          "E->a [.], 2 " + _("E->[.] a, 2"),
+          "E->E + E [.], 0 " + _("E->a [.], 2"),
+          "E->E [.] + E, 2 " + _("E->a [.], 2"),
+          "S->E [.], 0 " + _("E->E + E [.], 0"),
+          "E->E [.] + E, 0 " + _("E->E + E [.], 0")
+        ].sort().join("; "),
+        set.getStates().map( function(a)
+        {
+          return a.toStringWithIncomingStates()
+        }).sort().join("; ")
+      );
+      
+      var set = new earley.Set(plus, 4);
+      //set.addState(new earley.State(earley.Rule.create(E, [ E, plus, E]), 2, 2));
+      //set.addState(new earley.State(earley.Rule.create(E, [ E, plus, E]), 0, 2));      
+      parser.addSet(set);
+      parser._scan(set, plus);
+      parser._completeAndPredict(set);
+
+      this.assertEquals(
+        [
+          "E->E + [.] E, 2 " + _("E->E [.] + E, 2"), 
+          "E->E + [.] E, 0 " + _("E->E [.] + E, 0"),
+          "E->[.] E + E, 4 " + _("E->E + [.] E, 2", "E->E + [.] E, 0", "E->[.] E + E, 4"),
+          "E->[.] a, 4 " + _("E->E + [.] E, 2", "E->E + [.] E, 0", "E->[.] E + E, 4")
+        ].sort().join("; "),
+        set.getStates().map( function(a)
+        {
+          return a.toStringWithIncomingStates()
+        }).sort().join("; ")
+      );
+      
+      var set = new earley.Set(a, 5);
+      parser.addSet(set);
+      parser._scan(set, a);
+      parser._completeAndPredict(set);
+
+      this.assertEquals(
+        [
+          "E->a [.], 4 " + _("E->[.] a, 4"),
+          "E->E + E [.], 2 " + _("E->a [.], 4"), 
+          "E->E + E [.], 0 " + _("E->a [.], 4", "E->E + E [.], 2"),
+          "E->E [.] + E, 4 " + _("E->a [.], 4"),
+          "E->E [.] + E, 2 " + _("E->E + E [.], 2"),
+          "S->E [.], 0 " + _("E->E + E [.], 0"),
+          "E->E [.] + E, 0 " + _("E->E + E [.], 0")
+        ].sort().join("; "),
+        set.getStates().map( function(a)
+        {
+          return a.toStringWithIncomingStates()
+        }).sort().join("; ")
+      );
+    },
+    
     
     testCompletePredictAdvanced : function()
     {
+      var _ = this._sortAndJoin;
+      
       var NT = earley.NonTerminal.create;
       var Terminal = earley.Terminal.create;
       var R = earley.Rule.create;
@@ -205,17 +360,17 @@ qx.Class.define("earley.test.Parser",
 
       this.assertEquals(
         [
-          "S->[.] E, 0",
-          "E->[.] T + E, 0",
-          "E->[.] T, 0",
-          "T->[.] F * T, 0",
-          "T->[.] F, 0",
-          "F->[.] ( E ), 0",
-          "F->[.] a, 0"
+          "S->[.] E, 0 " + _(""),
+          "E->[.] T + E, 0 " + _("S->[.] E, 0"),
+          "E->[.] T, 0 " + _("S->[.] E, 0"),
+          "T->[.] F * T, 0 " + _("E->[.] T + E, 0", "E->[.] T, 0"),
+          "T->[.] F, 0 " + _("E->[.] T + E, 0", "E->[.] T, 0"),
+          "F->[.] ( E ), 0 " + _("T->[.] F * T, 0", "T->[.] F, 0"),
+          "F->[.] a, 0 " + _("T->[.] F * T, 0", "T->[.] F, 0")
         ].sort().join("; "),
         set.getStates().map( function(a)
         {
-          return a + ""
+          return a.toStringWithIncomingStates()
         }).sort().join("; ")
       );
 
@@ -283,7 +438,7 @@ qx.Class.define("earley.test.Parser",
     },    
     
     
-    testParse : function()
+    _testParse : function()
     {
       var grammar = this.grammar;
       var a = this.a;
