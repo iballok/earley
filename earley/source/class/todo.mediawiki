@@ -1,0 +1,40 @@
+===2009.03.31. - FJA, IBA===
+* use case: json parser; (css parser)
+
+* modules:
+** scanner
+** tagger
+
+* artifacts:
+** sentence forms
+** derivation tree
+** AST
+
+* features:
+** handling of unknown tags/terminals; suggesting a possible terminal
+** error handling, reports
+** error toleration (skip (insertion error))
+ 
+* transformations (arithmetical computation, formatting)
+** visitor design pattern
+
+* qooxdoo contrib
+
+====Statistics====
+* Implementation
+   80 ./earley/Grammar.js
+   47 ./earley/NonTerminal.js
+  195 ./earley/Parser.js
+   90 ./earley/Rule.js
+   91 ./earley/Set.js
+  102 ./earley/State.js
+  103 ./earley/StateStack.js
+   49 ./earley/Terminal.js
+  757 total
+* Tests
+  125 ./earley/test/Grammar.js
+  506 ./earley/test/Parser.js
+  126 ./earley/test/Set.js
+  225 ./earley/test/State.js
+  319 ./earley/test/StateStack.js
+ 1301 total
