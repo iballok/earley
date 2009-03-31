@@ -44,7 +44,7 @@ qx.Class.define("earley.Rule",
 
     
     getRightHandSide : function() {
-      return qx.lang.Array.copy(this.__rightHandSide);
+      return qx.lang.Array.clone(this.__rightHandSide);
     },
     
     
