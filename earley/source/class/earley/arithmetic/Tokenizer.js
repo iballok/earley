@@ -15,15 +15,18 @@ qx.Class.define("earley.arithmetic.Tokenizer",
       var input = this.__input;
       var tokenStream = new earley.TokenStream(input);
 
-      var separator_re = /(\s+)/;
+      var separator_re = /([\s\(\)\+])/;
 
       var position = 0;
       var tokens = input.split(separator_re);
       for ( var i = 0; i < tokens.length; i++)
       {
         var tokenString = tokens[i];
+        if (tokenString.length == 0) {
+          continue;
+        }
 
-        if (!tokenString.match(separator_re))
+        if (!tokenString.match(/\s+/))
         {
           var token = new earley.Token(position, tokenString.length,
               tokenStream);

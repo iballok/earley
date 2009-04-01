@@ -6,7 +6,7 @@ qx.Class.define("earley.test.Tokenizer",
   {
     testArithmeticTokenizer : function()
     {
-      var input = "3 + ( 5 * 14 )";
+      var input = "3+ (5 * 14 )";
       var arithmeticTokenizer = new earley.arithmetic.Tokenizer(input);
       var tokenStream = arithmeticTokenizer.tokenize();
       this.assertTrue(tokenStream.hasNext());
